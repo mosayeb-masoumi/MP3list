@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="seekbarTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#4cc7c3</item>
+        <item name="colorPrimaryDark">#4cc7c3</item>
+        <item name="colorAccent">#4cc7c3</item>
+        <item name="android:textColorSecondary">#4cc7c3</item>
+        <item name="android:itemBackground">#4cc7c3</item>
+        <item name="android:textColor">#4cc7c3</item>
+    </style>
+
+
+</resources>
