@@ -1,119 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="85dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="85dp">
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_margin="5dp"
         android:elevation="0dp"
-        app:cardElevation="0dp"
         app:cardCornerRadius="15dp"
-        android:layout_height="match_parent">
+        app:cardElevation="0dp">
+
         <RelativeLayout
             android:id="@+id/main"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <ImageView
+                android:id="@+id/img"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/shape_media"
-                android:id="@+id/img"/>
+                android:background="@drawable/shape_media" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:orientation="horizontal">
-                <ProgressBar
-                    android:id="@+id/loading"
-                    android:layout_weight="0.15"
-                    android:layout_width="0dp"
-                    android:visibility="gone"
-                    android:theme="@style/seekbarTheme"
-                    android:layout_height="30dp" />
+
                 <RelativeLayout
                     android:id="@+id/play_lay"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:gravity="center"
-                    android:layout_weight="0.15">
+                    android:layout_weight="0.15"
+                    android:gravity="center">
+
                     <ImageView
-                        android:id="@+id/playPause"
+                        android:id="@+id/img_play"
                         android:layout_width="25dp"
-                        android:src="@drawable/play_selector"
-                        android:layout_height="40dp"/>
+                        android:layout_height="40dp"
+                        android:src="@drawable/play" />
+
+                    <ImageView
+                        android:id="@+id/img_pause"
+                        android:layout_width="25dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/pause"
+                        android:visibility="gone" />
+                    <ProgressBar
+                        android:layout_width="25dp"
+                        android:layout_height="40dp"
+                        android:visibility="gone"
+                        android:id="@+id/progressbar"/>
+
                 </RelativeLayout>
 
+
                 <TextView
-                    android:id="@+id/start"
-                    android:layout_width="50dp"
-                    android:layout_height="match_parent"
+                    android:id="@+id/textCurrentTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="0:00"
-                    android:paddingLeft="8dp"
-                    android:gravity="center"
-                    android:textColor="#4cc7c3"/>
+                    android:textColor="#4cc7c3"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+
                 <SeekBar
                     android:id="@+id/seekbar"
                     android:layout_width="0dp"
-                    android:theme="@style/seekbarTheme"
-                    android:layout_weight="0.7"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.7" />
+
+
                 <TextView
-                    android:id="@+id/end"
+                    android:id="@+id/textTotalDuration"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:text="0:00"
-                    android:paddingRight="8dp"
-                    android:gravity="center"
-                    android:textColor="#4cc7c3"/>
+                    android:textColor="#4cc7c3"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+
                 <LinearLayout
                     android:id="@+id/menu"
                     android:layout_width="0dp"
-                    android:layout_weight="0.15"
-                    android:orientation="vertical"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center|right"
+                    android:layout_weight="0.15"
                     android:gravity="center|right"
-                    android:layout_height="match_parent">
+                    android:orientation="vertical">
+
                     <ImageView
                         android:layout_width="30dp"
-                        android:layout_gravity="center"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/more_green"/>
+                        android:layout_gravity="center"
+                        android:src="@drawable/more_green" />
                 </LinearLayout>
 
             </LinearLayout>
+
             <TextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:gravity="center"
+                android:layout_alignParentBottom="true"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
                 android:ellipsize="marquee"
+                android:gravity="center"
+                android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:selectAllOnFocus="true"
-                android:marqueeRepeatLimit="marquee_forever"
                 android:singleLine="true"
-                android:textSize="11sp"
                 android:textColor="#00a5a5"
-                android:layout_alignParentBottom="true"/>
+                android:textSize="11sp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#000000"
                 android:layout_alignParentBottom="true"
+                android:background="#000000"
                 android:orientation="horizontal">
+
                 <com.potyvideo.library.AndExoPlayerView
                     android:id="@+id/andExoPlayerView"
                     android:layout_width="0dp"
-                    android:layout_weight="0.9"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.9"
+                    android:visibility="gone"
                     app:andexo_aspect_ratio="aspect_mp3"
                     app:andexo_full_screen="true"
                     app:andexo_loop="finite"
-                    android:visibility="gone"
                     app:andexo_play_when_ready="true"
                     app:andexo_resize_mode="Fit"
                     app:andexo_show_controller="true" />
@@ -125,8 +147,7 @@
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-                </com.google.android.exoplayer2.ui.PlayerView>
+                    app:layout_constraintTop_toTopOf="parent"></com.google.android.exoplayer2.ui.PlayerView>
             </LinearLayout>
 
         </RelativeLayout>

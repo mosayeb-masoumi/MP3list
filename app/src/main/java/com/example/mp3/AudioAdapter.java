@@ -2,8 +2,10 @@ package com.example.mp3;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,9 +17,12 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioViewHolder> {
     List<String> links;
     Context context;
 
+
     public AudioAdapter(List<String> links, Context context) {
         this.links = links;
         this.context = context;
+
+
     }
 
     @NonNull
@@ -29,7 +34,6 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull AudioViewHolder holder, int position) {
-
         String model = links.get(position);
         holder.bindData(model);
         holder.setOnAudioHolderListener(listener, model, position);
