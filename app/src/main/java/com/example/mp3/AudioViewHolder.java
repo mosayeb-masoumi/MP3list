@@ -22,7 +22,7 @@ import com.potyvideo.library.AndExoPlayerView;
 public class AudioViewHolder extends RecyclerView.ViewHolder {
 
     LinearLayout menu;
-    ImageView imgPlay ,imgPause;
+    ImageView imgPlay, imgPause;
     TextView textCurrentTime, textTotalDuration;
     SeekBar seekbar;
     ProgressBar progressBar;
@@ -30,7 +30,6 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
     MediaPlayer mediaPlayer;
 
     Handler handler;
-
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -50,7 +49,6 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
         handler = new Handler();
 
 
-
         mediaPlayer.setOnBufferingUpdateListener((mediaPlayer, i) -> seekbar.setSecondaryProgress(i));
 
 
@@ -67,44 +65,40 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
         });
 
 
-
         seekbar.setOnTouchListener((view, motionEvent) -> {
 
             SeekBar seekBar = (SeekBar) view;
-            int playPosition = (mediaPlayer.getDuration() / 100)*seekBar.getProgress();
+            int playPosition = (mediaPlayer.getDuration() / 100) * seekBar.getProgress();
             mediaPlayer.seekTo(playPosition);
             textCurrentTime.setText(milliSecondToTimer(mediaPlayer.getCurrentPosition()));
             return false;
         });
 
 
-
-
-
     }
-
 
 
     public void bindData(String model) {
     }
 
 
-
     public void setOnAudioHolderListener(AudioItemInteraction listener, String url, int position) {
 
         imgPlay.setOnClickListener(v -> {
 
-            if(!Constant.ISRUNNING){
+            if (!Constant.ISRUNNING) {
                 Constant.ISRUNNING = true;
 
-                imgPlay.setVisibility(View.GONE);
-                imgPause.setVisibility(View.VISIBLE);
-//                progressBar.setVisibility(View.VISIBLE);
-                prepareMediaPlayer(url);
-                mediaPlayer.start();
-                updateSeekbar();
+//                imgPlay.setVisibility(View.GONE);
+//                imgPause.setVisibility(View.VISIBLE);
+////                progressBar.setVisibility(View.VISIBLE);
+//                prepareMediaPlayer(url);
+//                mediaPlayer.start();
+//                updateSeekbar();
 
-            }else{
+                playSong(url);
+
+            } else {
                 Toast.makeText(itemView.getContext(), "stop running player", Toast.LENGTH_SHORT).show();
             }
 
@@ -116,7 +110,7 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
             imgPause.setVisibility(View.GONE);
             progressBar.setVisibility(View.GONE);
 
-            if(mediaPlayer.isPlaying()){
+            if (mediaPlayer.isPlaying()) {
                 handler.removeCallbacks(updater);
                 mediaPlayer.pause();
             }
@@ -129,11 +123,41 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
     }
 
+    private void playSong(String url) {
+
+        imgPlay.setVisibility(View.GONE);
+        imgPause.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+
+        try {
+
+            mediaPlayer.setDataSource(url);
+            mediaPlayer.prepare();
 
 
+        } catch (Exception exception) {
+
+            Toast.makeText(itemView.getContext(), "" + exception.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+
+                imgPlay.setVisibility(View.GONE);
+                imgPause.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+
+                textTotalDuration.setText(milliSecondToTimer(mediaPlayer.getDuration()));
+                mediaPlayer.start();
+                updateSeekbar();
+            }
+        });
+
+    }
 
 
-    private void prepareMediaPlayer(String url){
+    private void prepareMediaPlayer(String url) {
 
         try {
 
@@ -141,12 +165,11 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
             mediaPlayer.prepare();
             textTotalDuration.setText(milliSecondToTimer(mediaPlayer.getDuration()));
 
-        }catch (Exception exception){
+        } catch (Exception exception) {
 
-            Toast.makeText(itemView.getContext(), ""+exception.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(itemView.getContext(), "" + exception.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-
 
 
     private Runnable updater = new Runnable() {
@@ -159,33 +182,30 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
     };
 
 
-    private void updateSeekbar(){
-        if(mediaPlayer.isPlaying()){
-            seekbar.setProgress((int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) *100 ));
-            handler.postDelayed(updater , 1000);
+    private void updateSeekbar() {
+        if (mediaPlayer.isPlaying()) {
+            seekbar.setProgress((int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100));
+            handler.postDelayed(updater, 1000);
         }
 
     }
 
 
+    private String milliSecondToTimer(long milliSeconds) {
 
-
-
-    private String milliSecondToTimer (long milliSeconds){
-
-        String timerString ="";
+        String timerString = "";
         String secondsString;
-        int hour = (int) (milliSeconds/(1000*60*60));
-        int minutes = (int) (milliSeconds % (1000*60*60)) /(1000*60);
-        int seconds = (int) ((milliSeconds % (1000*60*60)) %(1000*60)/1000);
+        int hour = (int) (milliSeconds / (1000 * 60 * 60));
+        int minutes = (int) (milliSeconds % (1000 * 60 * 60)) / (1000 * 60);
+        int seconds = (int) ((milliSeconds % (1000 * 60 * 60)) % (1000 * 60) / 1000);
 
-        if(hour > 0){
-            timerString =  hour + ":";
+        if (hour > 0) {
+            timerString = hour + ":";
         }
 
-        if(seconds<10){
+        if (seconds < 10) {
             secondsString = "0" + seconds;
-        }else{
+        } else {
             secondsString = "" + seconds;
         }
 
