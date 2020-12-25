@@ -28,12 +28,12 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
 
         List<String> links = new ArrayList<>();
+//        links.add("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3");
+//        links.add("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3");
+//        links.add("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3");
         links.add("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3");
-        links.add("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3");
-        links.add("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3");
-        links.add("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3");
-//        links.add("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3");
-//        links.add("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_2MG.mp3");
+        links.add("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3");
+        links.add("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_2MG.mp3");
 
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
