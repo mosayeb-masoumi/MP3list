@@ -3,12 +3,10 @@ package com.example.mp3;
 import android.annotation.SuppressLint;
 import android.media.MediaPlayer;
 import android.os.Handler;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,8 +14,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.exoplayer2.ui.PlayerView;
-import com.potyvideo.library.AndExoPlayerView;
 
 public class AudioViewHolder extends RecyclerView.ViewHolder {
 
