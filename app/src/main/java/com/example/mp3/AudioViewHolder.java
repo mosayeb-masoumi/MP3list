@@ -23,9 +23,11 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
     SeekBar seekbar;
     ProgressBar progressBar;
 
-    MediaPlayer mediaPlayer;
+    MediaPlayer mediaPlayer = new MediaPlayer();
 
     Handler handler;
+
+    boolean prepared ;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -39,14 +41,29 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
         seekbar = itemView.findViewById(R.id.seekbar);
         progressBar = itemView.findViewById(R.id.progressbar);
 
-
+        prepared = false;
         seekbar.setMax(100);
-        mediaPlayer = new MediaPlayer();
+//   /     mediaPlayer = new MediaPlayer();
         handler = new Handler();
 
 
         mediaPlayer.setOnBufferingUpdateListener((mediaPlayer, i) -> seekbar.setSecondaryProgress(i));
 
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+
+                imgPlay.setVisibility(View.GONE);
+                imgPause.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+
+                textTotalDuration.setText(milliSecondToTimer(mediaPlayer.getDuration()));
+                mediaPlayer.start();
+                updateSeekbar();
+
+                prepared = true;
+            }
+        });
 
         mediaPlayer.setOnCompletionListener(mediaPlayer -> {
             Constant.ISRUNNING = false;
@@ -61,13 +78,26 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
         });
 
 
-        seekbar.setOnTouchListener((view, motionEvent) -> {
 
-            SeekBar seekBar = (SeekBar) view;
-            int playPosition = (mediaPlayer.getDuration() / 100) * seekBar.getProgress();
-            mediaPlayer.seekTo(playPosition);
-            textCurrentTime.setText(milliSecondToTimer(mediaPlayer.getCurrentPosition()));
-            return false;
+
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                int playPosition = (mediaPlayer.getDuration() / 100) * seekBar.getProgress();
+                mediaPlayer.seekTo(playPosition);
+                textCurrentTime.setText(milliSecondToTimer(mediaPlayer.getCurrentPosition()));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
         });
 
 
@@ -121,51 +151,52 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
     private void playSong(String url) {
 
+
         imgPlay.setVisibility(View.GONE);
         imgPause.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
 
-        try {
 
+        try {
+            mediaPlayer.reset();
             mediaPlayer.setDataSource(url);
             mediaPlayer.prepare();
-
 
         } catch (Exception exception) {
 
             Toast.makeText(itemView.getContext(), "" + exception.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
 
-                imgPlay.setVisibility(View.GONE);
-                imgPause.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.GONE);
 
-                textTotalDuration.setText(milliSecondToTimer(mediaPlayer.getDuration()));
-                mediaPlayer.start();
-                updateSeekbar();
-            }
-        });
+        mediaPlayer.start();
+        updateSeekbar();
 
     }
 
+//        else{
+//
+//            imgPlay.setVisibility(View.GONE);
+//            imgPause.setVisibility(View.VISIBLE);
+//            progressBar.setVisibility(View.GONE);
+//            mediaPlayer.start();
+//            updateSeekbar();
+//        }
 
-    private void prepareMediaPlayer(String url) {
 
-        try {
-
-            mediaPlayer.setDataSource(url);
-            mediaPlayer.prepare();
-            textTotalDuration.setText(milliSecondToTimer(mediaPlayer.getDuration()));
-
-        } catch (Exception exception) {
-
-            Toast.makeText(itemView.getContext(), "" + exception.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
+//    private void prepareMediaPlayer(String url) {
+//
+//        try {
+//
+//            mediaPlayer.setDataSource(url);
+//            mediaPlayer.prepare();
+//            textTotalDuration.setText(milliSecondToTimer(mediaPlayer.getDuration()));
+//
+//        } catch (Exception exception) {
+//
+//            Toast.makeText(itemView.getContext(), "" + exception.getMessage(), Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
 
     private Runnable updater = new Runnable() {
