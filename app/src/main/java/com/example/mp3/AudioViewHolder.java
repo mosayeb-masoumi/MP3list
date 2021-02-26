@@ -219,6 +219,7 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
             }
 
         }
+
     };
 
     private void updateSeekbar() {
