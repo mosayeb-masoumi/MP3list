@@ -206,10 +206,13 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
     private Runnable updater = new Runnable() {
         @Override
         public void run() {
-            updateSeekbar();
+
             long currentDuration = mediaPlayer.getCurrentPosition();
 
             if(currentDuration>0){
+
+                updateSeekbar();
+
                 textCurrentTime.setText(milliSecondToTimer(currentDuration));
             }else{
                 textCurrentTime.setText("0:00");
