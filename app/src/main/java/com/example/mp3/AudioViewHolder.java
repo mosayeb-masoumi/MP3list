@@ -14,6 +14,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.IOException;
+
 
 public class AudioViewHolder extends RecyclerView.ViewHolder {
 
@@ -80,25 +82,36 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
 
 
-        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        seekbar.setOnTouchListener((view, motionEvent) -> {
 
-                int playPosition = (mediaPlayer.getDuration() / 100) * seekBar.getProgress();
-                mediaPlayer.seekTo(playPosition);
-                textCurrentTime.setText(milliSecondToTimer(mediaPlayer.getCurrentPosition()));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+            SeekBar seekBar = (SeekBar) view;
+            int playPosition = (mediaPlayer.getDuration() / 100) * seekBar.getProgress();
+            mediaPlayer.seekTo(playPosition);
+            textCurrentTime.setText(milliSecondToTimer(mediaPlayer.getCurrentPosition()));
+            return false;
         });
+
+
+
+//        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//
+//                int playPosition = (mediaPlayer.getDuration() / 100) * seekBar.getProgress();
+//                mediaPlayer.seekTo(playPosition);
+//                textCurrentTime.setText(milliSecondToTimer(mediaPlayer.getCurrentPosition()));
+//            }
+//
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {
+//
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//
+//            }
+//        });
 
 
     }
@@ -115,12 +128,11 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
             if (!Constant.ISRUNNING) {
                 Constant.ISRUNNING = true;
 
-//                imgPlay.setVisibility(View.GONE);
-//                imgPause.setVisibility(View.VISIBLE);
-////                progressBar.setVisibility(View.VISIBLE);
-//                prepareMediaPlayer(url);
-//                mediaPlayer.start();
-//                updateSeekbar();
+
+//                if(Constant.POSITION !=position){
+//                    Constant.POSITION = position;
+////                    mediaPlayer.reset();
+//                }
 
                 playSong(url);
 
@@ -153,18 +165,20 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
 
         imgPlay.setVisibility(View.GONE);
-        imgPause.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
+        imgPause.setVisibility(View.VISIBLE);
+//        progressBar.setVisibility(View.VISIBLE);
+
+
 
 
         try {
-            mediaPlayer.reset();
+//            mediaPlayer.reset();
             mediaPlayer.setDataSource(url);
             mediaPlayer.prepare();
 
         } catch (Exception exception) {
 
-            Toast.makeText(itemView.getContext(), "" + exception.getMessage(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(itemView.getContext(), "" + exception.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
 
