@@ -78,10 +78,10 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
             textCurrentTime.setText("0:00");
             textTotalDuration.setText("0:00");
             mediaPlayer.reset();
+
+            handler.removeCallbacks(updater);
 //                 prepareMediaPlayer();
         });
-
-
 
 
 //        seekbar.setOnTouchListener((view, motionEvent) -> {
