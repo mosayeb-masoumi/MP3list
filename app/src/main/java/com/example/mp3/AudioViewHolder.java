@@ -14,6 +14,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.danikula.videocache.HttpProxyCacheServer;
+
 import java.io.IOException;
 
 
@@ -150,7 +152,7 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
         });
 
         imgPause.setOnClickListener(v -> {
-            Constant.ISRUNNING   = false;
+            Constant.ISRUNNING = false;
             imgPlay.setVisibility(View.VISIBLE);
             imgPause.setVisibility(View.GONE);
             progressBar.setVisibility(View.GONE);
@@ -179,8 +181,14 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
 
         try {
-//            mediaPlayer.reset();
-            mediaPlayer.setDataSource(url);
+
+            // to read from cache
+            HttpProxyCacheServer proxyServer = new HttpProxyCacheServer.Builder(itemView.getContext()).maxCacheSize(1024 * 1024 * 1024).build();
+            String proxyUrl = proxyServer.getProxyUrl(url);
+
+
+            mediaPlayer.setDataSource(proxyUrl);
+//            mediaPlayer.setDataSource(url);
             mediaPlayer.prepare();
 
         } catch (Exception exception) {
