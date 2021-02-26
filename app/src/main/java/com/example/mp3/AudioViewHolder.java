@@ -14,6 +14,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.danikula.videocache.HttpProxyCacheServer;
+
 import java.io.IOException;
 
 
@@ -92,26 +94,28 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
         });
 
 
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-//        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//
-//                int playPosition = (mediaPlayer.getDuration() / 100) * seekBar.getProgress();
-//                mediaPlayer.seekTo(playPosition);
-//                textCurrentTime.setText(milliSecondToTimer(mediaPlayer.getCurrentPosition()));
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//
-//            }
-//        });
+                if (fromUser) {
+                    long seekBarProgress = seekBar.getProgress();
+                    int playPosition = (int) ((mediaPlayer.getDuration() / 100) * seekBarProgress);
+                    mediaPlayer.seekTo(playPosition);
+                    textCurrentTime.setText(milliSecondToTimer(mediaPlayer.getCurrentPosition()));
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
 
     }
@@ -172,8 +176,14 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
 
         try {
-//            mediaPlayer.reset();
-            mediaPlayer.setDataSource(url);
+
+            // to read from cache
+            HttpProxyCacheServer proxyServer = new HttpProxyCacheServer.Builder(itemView.getContext()).maxCacheSize(1024 * 1024 * 1024).build();
+            String proxyUrl = proxyServer.getProxyUrl(url);
+
+
+            mediaPlayer.setDataSource(proxyUrl);
+//            mediaPlayer.setDataSource(url);
             mediaPlayer.prepare();
 
         } catch (Exception exception) {
