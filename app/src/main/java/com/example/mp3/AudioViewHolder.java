@@ -70,6 +70,28 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
             return false;
         });
 
+//        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+////                SeekBar seekBar = (SeekBar) view;
+//                int playPosition = (mediaPlayer.getDuration() / 100) * seekBar.getProgress();
+//                mediaPlayer.seekTo(playPosition);
+//                textCurrentTime.setText(milliSecondToTimer(mediaPlayer.getCurrentPosition()));
+//            }
+//
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {
+//
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//
+//            }
+//        });
+
+
+
 
     }
 
@@ -92,6 +114,9 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 //                mediaPlayer.start();
 //                updateSeekbar();
 
+//                mediaPlayer.stop();
+//                mediaPlayer.release();
+
                 playSong(url);
 
             } else {
@@ -101,7 +126,7 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
         });
 
         imgPause.setOnClickListener(v -> {
-            Constant.ISRUNNING = false;
+            Constant.ISRUNNING   = false;
             imgPlay.setVisibility(View.VISIBLE);
             imgPause.setVisibility(View.GONE);
             progressBar.setVisibility(View.GONE);
