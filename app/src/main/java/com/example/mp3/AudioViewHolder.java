@@ -82,58 +82,40 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
 
 
-        seekbar.setOnTouchListener((view, motionEvent) -> {
+//        seekbar.setOnTouchListener((view, motionEvent) -> {
+//
+//            SeekBar seekBar = (SeekBar) view;
+//            int playPosition = (mediaPlayer.getDuration() / 100) * seekBar.getProgress();
+//            mediaPlayer.seekTo(playPosition);
+//            textCurrentTime.setText(milliSecondToTimer(mediaPlayer.getCurrentPosition()));
+//            return false;
+//        });
 
-            SeekBar seekBar = (SeekBar) view;
-            int playPosition = (mediaPlayer.getDuration() / 100) * seekBar.getProgress();
-            mediaPlayer.seekTo(playPosition);
-            textCurrentTime.setText(milliSecondToTimer(mediaPlayer.getCurrentPosition()));
-            return false;
+
+
+
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                if (fromUser) {
+                    long seekBarProgress = seekBar.getProgress();
+                    int playPosition = (int) ((mediaPlayer.getDuration() / 100) * seekBarProgress);
+                    mediaPlayer.seekTo(playPosition);
+                    textCurrentTime.setText(milliSecondToTimer(mediaPlayer.getCurrentPosition()));
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
         });
-
-//        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-////                SeekBar seekBar = (SeekBar) view;
-//                int playPosition = (mediaPlayer.getDuration() / 100) * seekBar.getProgress();
-//                mediaPlayer.seekTo(playPosition);
-//                textCurrentTime.setText(milliSecondToTimer(mediaPlayer.getCurrentPosition()));
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//
-//            }
-//        });
-
-
-
-
-
-//        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//
-//                int playPosition = (mediaPlayer.getDuration() / 100) * seekBar.getProgress();
-//                mediaPlayer.seekTo(playPosition);
-//                textCurrentTime.setText(milliSecondToTimer(mediaPlayer.getCurrentPosition()));
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//
-//            }
-//        });
 
 
     }
