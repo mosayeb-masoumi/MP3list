@@ -218,7 +218,6 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
         }
     };
 
-
     private void updateSeekbar() {
         if (mediaPlayer.isPlaying()) {
             seekbar.setProgress((int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100));
