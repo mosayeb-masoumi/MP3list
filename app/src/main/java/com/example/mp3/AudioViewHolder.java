@@ -178,8 +178,6 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 //        progressBar.setVisibility(View.VISIBLE);
 
 
-
-
         try {
 
             // to read from cache
@@ -197,35 +195,12 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
         }
 
 
-
         mediaPlayer.start();
         updateSeekbar();
 
     }
 
-//        else{
-//
-//            imgPlay.setVisibility(View.GONE);
-//            imgPause.setVisibility(View.VISIBLE);
-//            progressBar.setVisibility(View.GONE);
-//            mediaPlayer.start();
-//            updateSeekbar();
-//        }
 
-
-//    private void prepareMediaPlayer(String url) {
-//
-//        try {
-//
-//            mediaPlayer.setDataSource(url);
-//            mediaPlayer.prepare();
-//            textTotalDuration.setText(milliSecondToTimer(mediaPlayer.getDuration()));
-//
-//        } catch (Exception exception) {
-//
-//            Toast.makeText(itemView.getContext(), "" + exception.getMessage(), Toast.LENGTH_SHORT).show();
-//        }
-//    }
 
 
     private Runnable updater = new Runnable() {
@@ -233,7 +208,13 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
         public void run() {
             updateSeekbar();
             long currentDuration = mediaPlayer.getCurrentPosition();
-            textCurrentTime.setText(milliSecondToTimer(currentDuration));
+
+            if(currentDuration>0){
+                textCurrentTime.setText(milliSecondToTimer(currentDuration));
+            }else{
+                textCurrentTime.setText("0:00");
+            }
+
         }
     };
 
