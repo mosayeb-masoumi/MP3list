@@ -34,10 +34,13 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull AudioViewHolder holder, int position) {
+
         String model = links.get(position);
-        holder.bindData(model);
+        holder.bindData(model,position);
         holder.setOnAudioHolderListener(listener, model, position);
     }
+
+
 
     private AudioItemInteraction listener = null;
     public void setListener(AudioItemInteraction listener) {
