@@ -151,7 +151,7 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
             if(Constant.LASTPOSITION != position){
                 //new row clicked
-                listener.notifyDataSetChanged();  // re refresh list and show all items from the scratch
+                listener.notifyDataSetChanged();  //  refresh list and show all items from the scratch
                 Constant.LASTPOSITION = position;
             }
             playSong(url);
