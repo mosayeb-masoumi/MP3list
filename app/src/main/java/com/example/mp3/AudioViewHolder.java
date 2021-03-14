@@ -126,7 +126,7 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
         textTotalDuration.setText("0:00");
         handler.removeCallbacks(updater);
 
-        if(Constant.POSITION ==position){
+        if(Constant.LASTPOSITION ==position){
             Log.i("TAG", "bindData: ");
         }else{
             mediaPlayer.reset();
@@ -140,14 +140,22 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
         imgPlay.setOnClickListener(v -> {
 
-            if(Constant.POSITION == position){
-                playSong(url);
-            }else{
+//            if(Constant.POSITION == position){
+//                playSong(url);
+//            }else{
+//                //new row clicked
+//                listener.notifyDataSetChanged();  // re refresh list and show all items from the scratch
+//                Constant.POSITION = position;
+//                playSong(url);
+//            }
+
+            if(Constant.LASTPOSITION != position){
                 //new row clicked
                 listener.notifyDataSetChanged();  // re refresh list and show all items from the scratch
-                Constant.POSITION = position;
-                playSong(url);
+                Constant.LASTPOSITION = position;
             }
+            playSong(url);
+
 
         });
 
@@ -190,8 +198,7 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
             mediaPlayer.prepare();
 
         } catch (Exception exception) {
-
-//            Toast.makeText(itemView.getContext(), "" + exception.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.i("TAG", "playSong: ");
         }
 
 
