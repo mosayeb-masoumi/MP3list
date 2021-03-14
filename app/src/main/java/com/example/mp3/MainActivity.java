@@ -15,7 +15,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AudioItemInteraction {
 
     RecyclerView recyclerView;
     AudioAdapter adapter;
@@ -39,9 +39,14 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         adapter = new AudioAdapter(links, this);
+        adapter.setListener(this);
         recyclerView.setAdapter(adapter);
 
     }
 
 
+    @Override
+    public void notifyDataSetChanged() {
+        adapter.notifyDataSetChanged();
+    }
 }

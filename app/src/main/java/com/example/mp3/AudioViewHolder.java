@@ -3,6 +3,8 @@ package com.example.mp3;
 import android.annotation.SuppressLint;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.text.style.IconMarginSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -45,6 +47,9 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
         seekbar = itemView.findViewById(R.id.seekbar);
         progressBar = itemView.findViewById(R.id.progressbar);
 
+
+
+
         prepared = false;
         seekbar.setMax(100);
 //   /     mediaPlayer = new MediaPlayer();
@@ -78,21 +83,9 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
             textCurrentTime.setText("0:00");
             textTotalDuration.setText("0:00");
             mediaPlayer.reset();
-
             handler.removeCallbacks(updater);
 //                 prepareMediaPlayer();
         });
-
-
-//        seekbar.setOnTouchListener((view, motionEvent) -> {
-//
-//            SeekBar seekBar = (SeekBar) view;
-//            int playPosition = (mediaPlayer.getDuration() / 100) * seekBar.getProgress();
-//            mediaPlayer.seekTo(playPosition);
-//            textCurrentTime.setText(milliSecondToTimer(mediaPlayer.getCurrentPosition()));
-//            return false;
-//        });
-
 
 
 
@@ -123,7 +116,23 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
     }
 
 
-    public void bindData(String model) {
+    public void bindData(String model, int position) {
+
+        //refresh ui
+        imgPlay.setVisibility(View.VISIBLE);
+        imgPause.setVisibility(View.GONE);
+        seekbar.setProgress(0);
+        textCurrentTime.setText("0:00");
+        textTotalDuration.setText("0:00");
+        handler.removeCallbacks(updater);
+
+        if(Constant.LASTPOSITION ==position){
+            Log.i("TAG", "bindData: ");
+        }else{
+            mediaPlayer.reset();
+//            mediaPlayer.release();
+        }
+
     }
 
 
@@ -131,23 +140,22 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
         imgPlay.setOnClickListener(v -> {
 
-            if (!Constant.ISRUNNING) {
-                Constant.ISRUNNING = true;
+//            if(Constant.POSITION == position){
+//                playSong(url);
+//            }else{
+//                //new row clicked
+//                listener.notifyDataSetChanged();  // re refresh list and show all items from the scratch
+//                Constant.POSITION = position;
+//                playSong(url);
+//            }
 
-
-//                if(Constant.POSITION !=position){
-//                    Constant.POSITION = position;
-////                    mediaPlayer.reset();
-//                }
-
-//                mediaPlayer.stop();
-//                mediaPlayer.release();
-
-                playSong(url);
-
-            } else {
-                Toast.makeText(itemView.getContext(), "stop running player", Toast.LENGTH_SHORT).show();
+            if(Constant.LASTPOSITION != position){
+                //new row clicked
+                listener.notifyDataSetChanged();  // re refresh list and show all items from the scratch
+                Constant.LASTPOSITION = position;
             }
+            playSong(url);
+
 
         });
 
@@ -190,8 +198,7 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
             mediaPlayer.prepare();
 
         } catch (Exception exception) {
-
-//            Toast.makeText(itemView.getContext(), "" + exception.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.i("TAG", "playSong: ");
         }
 
 
@@ -206,21 +213,18 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
     private Runnable updater = new Runnable() {
         @Override
         public void run() {
-
+            updateSeekbar();
             long currentDuration = mediaPlayer.getCurrentPosition();
 
             if(currentDuration>0){
-
-                updateSeekbar();
-
                 textCurrentTime.setText(milliSecondToTimer(currentDuration));
             }else{
                 textCurrentTime.setText("0:00");
             }
 
         }
-
     };
+
 
     private void updateSeekbar() {
         if (mediaPlayer.isPlaying()) {
