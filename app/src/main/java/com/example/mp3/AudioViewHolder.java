@@ -132,10 +132,10 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
 
             // to read from cache
-//            HttpProxyCacheServer proxyServer = new HttpProxyCacheServer.Builder(itemView.getContext()).maxCacheSize(1024 * 1024 * 1024).build();
-//            String proxyUrl = proxyServer.getProxyUrl(url);
-//            mediaPlayer.setDataSource(proxyUrl);
-            mediaPlayer.setDataSource(url);
+            HttpProxyCacheServer proxyServer = new HttpProxyCacheServer.Builder(itemView.getContext()).maxCacheSize(1024 * 1024 * 1024).build();
+            String proxyUrl = proxyServer.getProxyUrl(url);
+            mediaPlayer.setDataSource(proxyUrl);
+//            mediaPlayer.setDataSource(url);
             mediaPlayer.prepareAsync();
 
 //
