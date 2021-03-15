@@ -55,36 +55,36 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
         handler = new Handler();
 
 
-//        mediaPlayer.setOnBufferingUpdateListener((mediaPlayer, i) -> seekbar.setSecondaryProgress(i));
+        mediaPlayer.setOnBufferingUpdateListener((mediaPlayer, i) -> seekbar.setSecondaryProgress(i));
 
-//        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//            @Override
-//            public void onPrepared(MediaPlayer mp) {
-//
-//                imgPlay.setVisibility(View.GONE);
-//                imgPause.setVisibility(View.VISIBLE);
-//                progressBar.setVisibility(View.GONE);
-//
-//                textTotalDuration.setText(milliSecondToTimer(mediaPlayer.getDuration()));
-//                mediaPlayer.start();
-//                updateSeekbar();
-//
-//                prepared = true;
-//            }
-//        });
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
 
-//        mediaPlayer.setOnCompletionListener(mediaPlayer -> {
-//            Constant.ISRUNNING = false;
-//            seekbar.setProgress(0);
-//            seekbar.setSecondaryProgress(0);
-//            imgPlay.setVisibility(View.VISIBLE);
-//            imgPause.setVisibility(View.GONE);
-//            textCurrentTime.setText("0:00");
-//            textTotalDuration.setText("0:00");
-//            mediaPlayer.reset();
-//            handler.removeCallbacks(updater);
-////                 prepareMediaPlayer();
-//        });
+                imgPlay.setVisibility(View.GONE);
+                imgPause.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+
+                textTotalDuration.setText(milliSecondToTimer(mediaPlayer.getDuration()));
+                mediaPlayer.start();
+                updateSeekbar();
+
+                prepared = true;
+            }
+        });
+
+        mediaPlayer.setOnCompletionListener(mediaPlayer -> {
+            Constant.ISRUNNING = false;
+            seekbar.setProgress(0);
+            seekbar.setSecondaryProgress(0);
+            imgPlay.setVisibility(View.VISIBLE);
+            imgPause.setVisibility(View.GONE);
+            textCurrentTime.setText("0:00");
+            textTotalDuration.setText("0:00");
+            mediaPlayer.reset();
+            handler.removeCallbacks(updater);
+//                 prepareMediaPlayer();
+        });
 
 
     }
