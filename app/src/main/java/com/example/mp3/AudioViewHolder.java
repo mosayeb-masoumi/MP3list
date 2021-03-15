@@ -1,9 +1,9 @@
 package com.example.mp3;
 
 import android.annotation.SuppressLint;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
-import android.text.style.IconMarginSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -39,7 +39,7 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
     @SuppressLint("ClickableViewAccessibility")
     public AudioViewHolder(@NonNull View itemView) {
         super(itemView);
-        menu = (LinearLayout) itemView.findViewById(R.id.menu);
+        menu = itemView.findViewById(R.id.menu);
         imgPlay = itemView.findViewById(R.id.img_play);
         imgPause = itemView.findViewById(R.id.img_pause);
         textCurrentTime = itemView.findViewById(R.id.textCurrentTime);
@@ -47,72 +47,9 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
         seekbar = itemView.findViewById(R.id.seekbar);
         progressBar = itemView.findViewById(R.id.progressbar);
 
-
-
-
         prepared = false;
         seekbar.setMax(100);
-//   /     mediaPlayer = new MediaPlayer();
         handler = new Handler();
-
-
-        mediaPlayer.setOnBufferingUpdateListener((mediaPlayer, i) -> seekbar.setSecondaryProgress(i));
-
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-
-                imgPlay.setVisibility(View.GONE);
-                imgPause.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.GONE);
-
-                textTotalDuration.setText(milliSecondToTimer(mediaPlayer.getDuration()));
-                mediaPlayer.start();
-                updateSeekbar();
-
-                prepared = true;
-            }
-        });
-
-        mediaPlayer.setOnCompletionListener(mediaPlayer -> {
-            Constant.ISRUNNING = false;
-            seekbar.setProgress(0);
-            seekbar.setSecondaryProgress(0);
-            imgPlay.setVisibility(View.VISIBLE);
-            imgPause.setVisibility(View.GONE);
-            textCurrentTime.setText("0:00");
-            textTotalDuration.setText("0:00");
-            mediaPlayer.reset();
-            handler.removeCallbacks(updater);
-//                 prepareMediaPlayer();
-        });
-
-
-
-        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-                if (fromUser) {
-                    long seekBarProgress = seekBar.getProgress();
-                    int playPosition = (int) ((mediaPlayer.getDuration() / 100) * seekBarProgress);
-                    mediaPlayer.seekTo(playPosition);
-                    textCurrentTime.setText(milliSecondToTimer(mediaPlayer.getCurrentPosition()));
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-
     }
 
 
@@ -121,46 +58,33 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
         //refresh ui
         imgPlay.setVisibility(View.VISIBLE);
         imgPause.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
         seekbar.setProgress(0);
-        textCurrentTime.setText("0:00");
-        textTotalDuration.setText("0:00");
+        textCurrentTime.setText(R.string.zero);
+        textTotalDuration.setText(R.string.zero);
         handler.removeCallbacks(updater);
 
         if(Constant.LASTPOSITION ==position){
             Log.i("TAG", "bindData: ");
+            progressBar.setVisibility(View.VISIBLE);
+            imgPause.setVisibility(View.GONE);
+            imgPlay.setVisibility(View.GONE);
         }else{
             mediaPlayer.reset();
-//            mediaPlayer.release();
         }
 
+        Constant.COMPLETED = true;
     }
 
 
     public void setOnAudioHolderListener(AudioItemInteraction listener, String url, int position) {
 
         imgPlay.setOnClickListener(v -> {
-
-//            if(Constant.POSITION == position){
-//                playSong(url);
-//            }else{
-//                //new row clicked
-//                listener.notifyDataSetChanged();  // re refresh list and show all items from the scratch
-//                Constant.POSITION = position;
-//                playSong(url);
-//            }
-
-            if(Constant.LASTPOSITION != position){
-                //new row clicked
-                listener.notifyDataSetChanged();  //  refresh list and show all items from the scratch
-                Constant.LASTPOSITION = position;
-            }
-            playSong(url);
-
-
+            playSong(url , position , listener);
         });
 
         imgPause.setOnClickListener(v -> {
-            Constant.ISRUNNING = false;
+            Constant.COMPLETED = false;
             imgPlay.setVisibility(View.VISIBLE);
             imgPause.setVisibility(View.GONE);
             progressBar.setVisibility(View.GONE);
@@ -178,39 +102,123 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    private void playSong(String url) {
-
-
-        imgPlay.setVisibility(View.GONE);
-        imgPause.setVisibility(View.VISIBLE);
-//        progressBar.setVisibility(View.VISIBLE);
-
+    private void playSong(String url, int position, AudioItemInteraction listener) {
 
         try {
 
+            if(Constant.LASTPOSITION != position){
+                //new row clicked
+                listener.notifyDataSetChanged();  // re refresh list and show all items from the scratch
+                Constant.LASTPOSITION = position;
+
+                imgPlay.setVisibility(View.GONE);
+                imgPause.setVisibility(View.GONE);
+                progressBar.setVisibility(View.VISIBLE);
+
+                mediaPlayer = new MediaPlayer();
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mediaPlayer.setOnBufferingUpdateListener((mediaPlayer, i) -> seekbar.setSecondaryProgress(i));
+                mediaPlayer.reset();
+            }else{
+                imgPlay.setVisibility(View.GONE);
+                imgPause.setVisibility(View.VISIBLE);
+
+                if(!Constant.COMPLETED){
+                    mediaPlayer.start();
+                }
+
+            }
+
+
+
             // to read from cache
-            HttpProxyCacheServer proxyServer = new HttpProxyCacheServer.Builder(itemView.getContext()).maxCacheSize(1024 * 1024 * 1024).build();
-            String proxyUrl = proxyServer.getProxyUrl(url);
+//            HttpProxyCacheServer proxyServer = new HttpProxyCacheServer.Builder(itemView.getContext()).maxCacheSize(1024 * 1024 * 1024).build();
+//            String proxyUrl = proxyServer.getProxyUrl(url);
+//            mediaPlayer.setDataSource(proxyUrl);
+            mediaPlayer.setDataSource(url);
+            mediaPlayer.prepareAsync();
+
+//
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+
+                    imgPlay.setVisibility(View.GONE);
+                    imgPause.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
+
+                    textTotalDuration.setText(milliSecondToTimer(mediaPlayer.getDuration()));
+                    mediaPlayer.start();
+                    updateSeekbar();
+
+                    prepared = true;
+                }
+            });
+
+            mediaPlayer.setOnCompletionListener(mediaPlayer -> {
+
+                Constant.COMPLETED = true;
+                seekbar.setProgress(0);
+                seekbar.setSecondaryProgress(0);
+                imgPlay.setVisibility(View.VISIBLE);
+                imgPause.setVisibility(View.GONE);
+                textCurrentTime.setText(R.string.zero);
+                textTotalDuration.setText(R.string.zero);
+                mediaPlayer.reset();
+                handler.removeCallbacks(updater);
+            });
 
 
-            mediaPlayer.setDataSource(proxyUrl);
-//            mediaPlayer.setDataSource(url);
-            mediaPlayer.prepare();
+            seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                    if (fromUser) {
+                        long seekBarProgress = seekBar.getProgress();
+                        int playPosition = (int) ((mediaPlayer.getDuration() / 100) * seekBarProgress);
+                        mediaPlayer.seekTo(playPosition);
+                        textCurrentTime.setText(milliSecondToTimer(mediaPlayer.getCurrentPosition()));
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
+
 
         } catch (Exception exception) {
             Log.i("TAG", "playSong: ");
         }
 
-
-        mediaPlayer.start();
         updateSeekbar();
+
 
     }
 
 
 
 
-    private Runnable updater = new Runnable() {
+
+
+
+
+
+
+
+
+
+
+
+/******************************* update minutes and seconds *********************************/
+
+    private final Runnable updater = new Runnable() {
         @Override
         public void run() {
             updateSeekbar();
@@ -219,7 +227,7 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
             if(currentDuration>0){
                 textCurrentTime.setText(milliSecondToTimer(currentDuration));
             }else{
-                textCurrentTime.setText("0:00");
+                textCurrentTime.setText(R.string.zero);
             }
 
         }
