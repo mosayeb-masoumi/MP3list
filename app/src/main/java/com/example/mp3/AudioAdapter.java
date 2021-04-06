@@ -14,12 +14,12 @@ import java.util.List;
 
 public class AudioAdapter extends RecyclerView.Adapter<AudioViewHolder> {
 
-    List<String> links;
+    List<Model> list;
     Context context;
 
 
-    public AudioAdapter(List<String> links, Context context) {
-        this.links = links;
+    public AudioAdapter(List<Model> list, Context context) {
+        this.list = list;
         this.context = context;
 
 
@@ -35,7 +35,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull AudioViewHolder holder, int position) {
 
-        String model = links.get(position);
+        Model model = list.get(position);
         holder.bindData(model,position);
         holder.setOnAudioHolderListener(listener, model, position);
     }
@@ -49,6 +49,6 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioViewHolder> {
 
     @Override
     public int getItemCount() {
-        return links.size();
+        return list.size();
     }
 }

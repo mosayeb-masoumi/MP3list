@@ -5,6 +5,7 @@
     android:layout_height="85dp">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/row_card"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="5dp"
@@ -104,54 +105,16 @@
                 </LinearLayout>
 
             </LinearLayout>
-
-<!--            <TextView-->
-<!--                android:id="@+id/title"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="30dp"-->
-<!--                android:layout_alignParentBottom="true"-->
-<!--                android:layout_marginLeft="30dp"-->
-<!--                android:layout_marginRight="30dp"-->
-<!--                android:ellipsize="marquee"-->
-<!--                android:gravity="center"-->
-<!--                android:marqueeRepeatLimit="marquee_forever"-->
-<!--                android:scrollHorizontally="true"-->
-<!--                android:selectAllOnFocus="true"-->
-<!--                android:singleLine="true"-->
-<!--                android:textColor="#00a5a5"-->
-<!--                android:textSize="11sp" />-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_alignParentBottom="true"-->
-<!--                android:background="#000000"-->
-<!--                android:orientation="horizontal">-->
-
-<!--                <com.potyvideo.library.AndExoPlayerView-->
-<!--                    android:id="@+id/andExoPlayerView"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_weight="0.9"-->
-<!--                    android:visibility="gone"-->
-<!--                    app:andexo_aspect_ratio="aspect_mp3"-->
-<!--                    app:andexo_full_screen="true"-->
-<!--                    app:andexo_loop="finite"-->
-<!--                    app:andexo_play_when_ready="true"-->
-<!--                    app:andexo_resize_mode="Fit"-->
-<!--                    app:andexo_show_controller="true" />-->
-
-<!--                <com.google.android.exoplayer2.ui.PlayerView-->
-<!--                    android:id="@+id/exoplayerView"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:visibility="gone"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintTop_toTopOf="parent"></com.google.android.exoplayer2.ui.PlayerView>-->
-<!--            </LinearLayout>-->
-
         </RelativeLayout>
-
     </androidx.cardview.widget.CardView>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="kkjj"
+        android:id="@+id/row_txt"
+        android:textSize="17sp"
+        android:layout_centerInParent="true"/>
+
 </RelativeLayout>

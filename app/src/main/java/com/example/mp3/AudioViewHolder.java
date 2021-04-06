@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.danikula.videocache.HttpProxyCacheServer;
@@ -25,22 +26,28 @@ import static com.example.mp3.MainActivity.mediaPlayer;
 
 public class AudioViewHolder extends RecyclerView.ViewHolder {
 
+
+    CardView row_card;
+    TextView row_txt;
+
     LinearLayout menu;
     ImageView imgPlay, imgPause;
     TextView textCurrentTime, textTotalDuration;
     SeekBar seekbar;
     ProgressBar progressBar;
 
-//    MediaPlayer mediaPlayer = new MediaPlayer();
-
     Handler handler;
-
-    boolean prepared ;
+    boolean prepared;
 
 
     @SuppressLint("ClickableViewAccessibility")
     public AudioViewHolder(@NonNull View itemView) {
         super(itemView);
+
+        row_card = itemView.findViewById(R.id.row_card);
+        row_txt = itemView.findViewById(R.id.row_txt);
+
+
         menu = itemView.findViewById(R.id.menu);
         imgPlay = itemView.findViewById(R.id.img_play);
         imgPause = itemView.findViewById(R.id.img_pause);
@@ -55,35 +62,49 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
     }
 
 
-    public void bindData(String model, int position) {
+    public void bindData(Model model, int position) {
 
-        //refresh ui
-        imgPlay.setVisibility(View.VISIBLE);
-        imgPause.setVisibility(View.GONE);
-        progressBar.setVisibility(View.GONE);
-        seekbar.setProgress(0);
-        textCurrentTime.setText(R.string.zero);
-        textTotalDuration.setText(R.string.zero);
-        handler.removeCallbacks(updater);
+        if (model.type.equals("audio")) {
+            row_card.setVisibility(View.VISIBLE);
+            row_txt.setVisibility(View.GONE);
 
-        if(Constant.LASTPOSITION ==position){
-            Log.i("TAG", "bindData: ");
-            progressBar.setVisibility(View.VISIBLE);
+            //refresh ui
+            imgPlay.setVisibility(View.VISIBLE);
             imgPause.setVisibility(View.GONE);
-            imgPlay.setVisibility(View.GONE);
-        }
-//        else{
-//            mediaPlayer.reset();
-//        }
+            progressBar.setVisibility(View.GONE);
+            seekbar.setProgress(0);
+            textCurrentTime.setText(R.string.zero);
+            textTotalDuration.setText(R.string.zero);
+            handler.removeCallbacks(updater);
 
-        Constant.COMPLETED = true;
+
+            if (Constant.LASTPOSITION == position) {
+                Log.i("TAG", "bindData: ");
+                playSong2(model.link, position);
+
+            } else {
+                progressBar.setVisibility(View.GONE);
+                imgPause.setVisibility(View.GONE);
+                imgPlay.setVisibility(View.VISIBLE);
+            }
+
+
+            Constant.COMPLETED = true;
+        } else if (model.type.equals("text")) {
+
+            row_card.setVisibility(View.GONE);
+            row_txt.setVisibility(View.VISIBLE);
+
+            row_txt.setText(model.link);
+        }
+
     }
 
 
-    public void setOnAudioHolderListener(AudioItemInteraction listener, String url, int position) {
+    public void setOnAudioHolderListener(AudioItemInteraction listener, Model model, int position) {
 
         imgPlay.setOnClickListener(v -> {
-            playSong(url , position , listener);
+            loadSong(model.link, position, listener);
         });
 
         imgPause.setOnClickListener(v -> {
@@ -99,38 +120,53 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
         });
 
-
         menu.setOnClickListener(v -> Toast.makeText(itemView.getContext(), "menu clicked!", Toast.LENGTH_SHORT).show());
-
 
     }
 
-    private void playSong(String url, int position, AudioItemInteraction listener) {
+
+
+    private void loadSong(String url, int position, AudioItemInteraction listener) {
+
+
+        if (Constant.LASTPOSITION != position) {
+
+            Constant.LASTPOSITION = position;
+            listener.notifyDataSetChanged();  // re refresh list and show all items from the scratch
+
+        } else {
+            imgPlay.setVisibility(View.GONE);
+            imgPause.setVisibility(View.VISIBLE);
+
+            if (!Constant.COMPLETED) {
+                mediaPlayer.start();
+                updateSeekbar();
+            }
+        }
+
+    }
+
+
+    private void playSong2(String url, int position) {
 
         try {
 
-            if(Constant.LASTPOSITION != position){
-                //new row clicked
-                listener.notifyDataSetChanged();  // re refresh list and show all items from the scratch
-                Constant.LASTPOSITION = position;
-
-                imgPlay.setVisibility(View.GONE);
-                imgPause.setVisibility(View.GONE);
-                progressBar.setVisibility(View.VISIBLE);
-
-                mediaPlayer = new MediaPlayer();
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mediaPlayer.setOnBufferingUpdateListener((mediaPlayer, i) -> seekbar.setSecondaryProgress(i));
-                mediaPlayer.reset();
-            }else{
-                imgPlay.setVisibility(View.GONE);
-                imgPause.setVisibility(View.VISIBLE);
-
-                if(!Constant.COMPLETED){
-                    mediaPlayer.start();
+            if (mediaPlayer != null) {
+                if (mediaPlayer.isPlaying()) {
+                    handler.removeCallbacks(updater);
+                    mediaPlayer.stop();
                 }
-
             }
+
+
+            imgPlay.setVisibility(View.GONE);
+            imgPause.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setOnBufferingUpdateListener((mediaPlayer, i) -> seekbar.setSecondaryProgress(i));
+            mediaPlayer.reset();
 
 
 
@@ -202,24 +238,10 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
         updateSeekbar();
 
-
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-/******************************* update minutes and seconds *********************************/
+    /******************************* update minutes and seconds *********************************/
 
     private final Runnable updater = new Runnable() {
         @Override
@@ -227,9 +249,9 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
             updateSeekbar();
             long currentDuration = mediaPlayer.getCurrentPosition();
 
-            if(currentDuration>0){
+            if (currentDuration > 0) {
                 textCurrentTime.setText(milliSecondToTimer(currentDuration));
-            }else{
+            } else {
                 textCurrentTime.setText(R.string.zero);
             }
 
