@@ -20,6 +20,8 @@ public class MainActivity extends AppCompatActivity implements AudioItemInteract
     RecyclerView recyclerView;
     AudioAdapter adapter;
 
+    public static MediaPlayer mediaPlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements AudioItemInteract
 
 
 
+
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         adapter = new AudioAdapter(links, this);
@@ -48,5 +52,20 @@ public class MainActivity extends AppCompatActivity implements AudioItemInteract
     @Override
     public void notifyDataSetChanged() {
         adapter.notifyDataSetChanged();
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        Constant.LASTPOSITION = -1;
+        adapter.notifyDataSetChanged();
+
+        if (mediaPlayer != null) {
+            if (mediaPlayer.isPlaying())
+                mediaPlayer.stop();
+        }
+
     }
 }

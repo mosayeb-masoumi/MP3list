@@ -20,6 +20,8 @@ import com.danikula.videocache.HttpProxyCacheServer;
 
 import java.io.IOException;
 
+import static com.example.mp3.MainActivity.mediaPlayer;
+
 
 public class AudioViewHolder extends RecyclerView.ViewHolder {
 
@@ -29,7 +31,7 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
     SeekBar seekbar;
     ProgressBar progressBar;
 
-    MediaPlayer mediaPlayer = new MediaPlayer();
+//    MediaPlayer mediaPlayer = new MediaPlayer();
 
     Handler handler;
 
@@ -69,9 +71,10 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
             progressBar.setVisibility(View.VISIBLE);
             imgPause.setVisibility(View.GONE);
             imgPlay.setVisibility(View.GONE);
-        }else{
-            mediaPlayer.reset();
         }
+//        else{
+//            mediaPlayer.reset();
+//        }
 
         Constant.COMPLETED = true;
     }
