@@ -1,14 +1,20 @@
 package com.example.mp3;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +25,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.danikula.videocache.HttpProxyCacheServer;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static com.example.mp3.MainActivity.mediaPlayer;
@@ -38,6 +47,9 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
     Handler handler;
     boolean prepared;
+
+    String endPointaud="";
+    String downloadState="";
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -120,10 +132,89 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
         });
 
-        menu.setOnClickListener(v -> Toast.makeText(itemView.getContext(), "menu clicked!", Toast.LENGTH_SHORT).show());
+
+        menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                PopupWindow popupwindow_obj = popupAudioDisplay(model, position, model, listener);
+                popupwindow_obj.showAsDropDown(menu, 0, 0);
+            }
+        });
+
 
     }
 
+    private PopupWindow popupAudioDisplay(Model model, int position, Model model1, AudioItemInteraction listener) {
+        String url = model.link;
+        endPointaud = (url.substring(url.lastIndexOf("/") + 1));
+
+
+        final PopupWindow popupWindow = new PopupWindow(itemView.getContext());
+        LayoutInflater inflater = (LayoutInflater) itemView.getContext().getSystemService(itemView.getContext().LAYOUT_INFLATER_SERVICE);
+
+        View view = null;
+        view = inflater.inflate(R.layout.popup_share_down, null);
+
+
+        TextView txt = (TextView) view.findViewById(R.id.txt1);
+
+        RelativeLayout down = (RelativeLayout) view.findViewById(R.id.down);
+        RelativeLayout share = (RelativeLayout) view.findViewById(R.id.share);
+        ImageView img = (ImageView) view.findViewById(R.id.img1);
+
+
+        if (isAudioDownloaded()) {
+            downloadState = "downloaded";
+            txt.setText("پخش صوت");
+            img.setImageResource(R.drawable.voice_icon);
+        } else {
+            txt.setText("دانلود");
+            img.setImageResource(R.drawable.download_icon2);
+            downloadState = "no_downloaded";
+        }
+
+
+        down.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                if (isAudioDownloaded()) {
+                    endPointaud = (model.link.substring(model.getLink().lastIndexOf("/") + 1));
+                    loadSong(model.getLink(), position, listener);
+
+                } else {
+                    listener.blogItemDownloadClicked(model, downloadState, "audio");
+                }
+
+                popupWindow.dismiss();
+
+            }
+        });
+
+        share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_SUBJECT, " ");
+                String sAux = "" + model.link + "\n" + "لینک دریافت اپلیکیشن  :" + "\n" + "https://mp3List.app/";
+                i.putExtra(Intent.EXTRA_TEXT, sAux);
+                itemView.getContext().startActivity(Intent.createChooser(i, "choose one"));
+                popupWindow.dismiss();
+            }
+        });
+
+        popupWindow.setFocusable(true);
+        popupWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+        popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        popupWindow.setContentView(view);
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setTouchable(true);
+        popupWindow.setBackgroundDrawable(new ColorDrawable());
+        return popupWindow;
+    }
 
 
     private void loadSong(String url, int position, AudioItemInteraction listener) {
@@ -164,20 +255,42 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
             progressBar.setVisibility(View.VISIBLE);
 
             mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setOnBufferingUpdateListener((mediaPlayer, i) -> seekbar.setSecondaryProgress(i));
-            mediaPlayer.reset();
+
+
+            if (isAudioDownloaded()) {
+
+                mediaPlayer.reset();
+                String path = App.path_save_aud + "/" + endPointaud;
+
+                try {
+                    FileInputStream fileInputStream = new FileInputStream(path);
+                    mediaPlayer.setDataSource(fileInputStream.getFD());
+                    fileInputStream.close();
+                    mediaPlayer.prepare();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mediaPlayer.setOnBufferingUpdateListener((mediaPlayer, i) -> seekbar.setSecondaryProgress(i));
+                mediaPlayer.reset();
+
+                // to read from cache
+                HttpProxyCacheServer proxyServer = new HttpProxyCacheServer.Builder(itemView.getContext()).maxCacheSize(1024 * 1024 * 1024).build();
+                String proxyUrl = proxyServer.getProxyUrl(url);
+                mediaPlayer.setDataSource(proxyUrl);
+
+                mediaPlayer.prepareAsync();
+
+
+            }
 
 
 
-            // to read from cache
-            HttpProxyCacheServer proxyServer = new HttpProxyCacheServer.Builder(itemView.getContext()).maxCacheSize(1024 * 1024 * 1024).build();
-            String proxyUrl = proxyServer.getProxyUrl(url);
-            mediaPlayer.setDataSource(proxyUrl);
-//            mediaPlayer.setDataSource(url);
-            mediaPlayer.prepareAsync();
-
-//
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -242,6 +355,28 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
         updateSeekbar();
 
+    }
+
+
+
+    private boolean isAudioDownloaded() {
+
+        String path = App.path_save_aud;
+        Log.d("Files", "Path: " + path);
+        File directory = new File(path);
+        File[] files = directory.listFiles();
+//        Log.d("Files", "Size: " + files.length);
+        if (files != null) {
+
+            for (int i = 0; i < files.length; i++) {
+
+                if (files[i].getName().equals(endPointaud)) {
+                    // file has been downloaded
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 
