@@ -36,7 +36,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioViewHolder> {
     public void onBindViewHolder(@NonNull AudioViewHolder holder, int position) {
 
         Model model = list.get(position);
-        holder.bindData(model,position);
+        holder.bindData(listener,model,position);
         holder.setOnAudioHolderListener(listener, model, position);
     }
 

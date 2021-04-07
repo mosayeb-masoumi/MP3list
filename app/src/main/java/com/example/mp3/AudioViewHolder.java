@@ -62,7 +62,7 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
     }
 
 
-    public void bindData(Model model, int position) {
+    public void bindData(AudioItemInteraction listener, Model model, int position) {
 
         if (model.type.equals("audio")) {
             row_card.setVisibility(View.VISIBLE);
@@ -80,7 +80,7 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
             if (Constant.LASTPOSITION == position) {
                 Log.i("TAG", "bindData: ");
-                playSong2(model.link, position);
+                playSong2(listener,model.link, position);
 
             } else {
                 progressBar.setVisibility(View.GONE);
@@ -147,7 +147,7 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
     }
 
 
-    private void playSong2(String url, int position) {
+    private void playSong2(AudioItemInteraction listener, String url, int position) {
 
         try {
 
@@ -205,6 +205,10 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
                 textTotalDuration.setText(R.string.zero);
                 mediaPlayer.reset();
                 handler.removeCallbacks(updater);
+
+                // add these 2 below lines ,when music completed , refresh list
+                Constant.LASTPOSITION = -1;
+                listener.notifyDataSetChanged();
             });
 
 
