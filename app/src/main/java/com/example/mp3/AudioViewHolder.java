@@ -297,7 +297,6 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
                 mediaPlayer.prepareAsync();
 
-
             }
 
 
