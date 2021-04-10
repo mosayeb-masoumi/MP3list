@@ -1,6 +1,7 @@
 package com.example.mp3;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
@@ -92,6 +93,7 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
 
             if (Constant.LASTPOSITION == position) {
                 Log.i("TAG", "bindData: ");
+                endPointaud = (model.getLink().substring(model.getLink().lastIndexOf("/") + 1));
                 playSong2(listener,model.link, position);
 
             } else {
@@ -116,6 +118,15 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
     public void setOnAudioHolderListener(AudioItemInteraction listener, Model model, int position) {
 
         imgPlay.setOnClickListener(v -> {
+            //to pause other application playing music while our app is playing
+            AudioManager mAudioManager_ = (AudioManager) itemView.getContext().getSystemService(Context.AUDIO_SERVICE);
+            int result = mAudioManager_.requestAudioFocus(focusChangeListener,
+                    AudioManager.STREAM_MUSIC,
+                    AudioManager.AUDIOFOCUS_GAIN);
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            }
+
+
             loadSong(model.link, position, listener);
         });
 
@@ -428,4 +439,27 @@ public class AudioViewHolder extends RecyclerView.ViewHolder {
         timerString = timerString + minutes + ":" + secondsString;
         return timerString;
     }
+
+
+
+    //to pause other application playing music while our app is playing
+    AudioManager.OnAudioFocusChangeListener focusChangeListener = new AudioManager.OnAudioFocusChangeListener()
+    {   @Override
+    public void onAudioFocusChange (int focusChange)
+    {   switch (focusChange)
+    {   case AudioManager.AUDIOFOCUS_GAIN:
+        Log.e("DEBUG", "##### AUDIOFOCUS_GAIN");
+        break;
+        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+            Log.e("DEBUG", "##### AUDIOFOCUS_LOSS_TRANSIENT");
+            break;
+        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+            Log.e("DEBUG", "##### AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
+            break;
+        case AudioManager.AUDIOFOCUS_LOSS:
+            Log.e("DEBUG", "##### AUDIOFOCUS_LOSS");
+            break;
+    }
+    }
+    };
 }

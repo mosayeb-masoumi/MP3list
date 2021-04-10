@@ -18,6 +18,7 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.util.Log;
@@ -36,6 +37,7 @@ import com.downloader.Progress;
 import com.example.mp3.util.CustomTypefaceSpan;
 import com.example.mp3.util.FontUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,17 +64,15 @@ public class MainActivity extends AppCompatActivity implements AudioItemInteract
 
 
         List<Model> list = new ArrayList<>();
-        list.add(new Model("1" , "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3" ,"audio"));
-        list.add(new Model("1" , "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3" ,"audio"));
-        list.add(new Model("1" , "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3" ,"audio"));
-        list.add(new Model("2" , "text1" ,"text"));
-        list.add(new Model("7" , "text7" ,"text"));
-        list.add(new Model("3" , "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3" ,"audio"));
-        list.add(new Model("4" , "text2" ,"text"));
-        list.add(new Model("5" , "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3" ,"audio"));
-        list.add(new Model("6" , "text6" ,"text"));
-
-
+        list.add(new Model("1", "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3", "audio"));
+        list.add(new Model("1", "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3", "audio"));
+        list.add(new Model("1", "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3", "audio"));
+        list.add(new Model("2", "text1", "text"));
+        list.add(new Model("7", "text7", "text"));
+        list.add(new Model("3", "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3", "audio"));
+        list.add(new Model("4", "text2", "text"));
+        list.add(new Model("5", "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3", "audio"));
+        list.add(new Model("6", "text6", "text"));
 
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements AudioItemInteract
         adapter = new AudioAdapter(list, this);
         adapter.setListener(this);
         recyclerView.setAdapter(adapter);
-
 
 
         // Setting timeout globally for the download network requests:
@@ -102,11 +101,11 @@ public class MainActivity extends AppCompatActivity implements AudioItemInteract
     public void blogItemDownloadClicked(Model model, String downloadState, String type) {
 
 
-        url =model.getLink();
+        url = model.getLink();
         if (checkWriteExternalPermission()) {
-                downloadFile(url);
+            downloadFile(url);
 
-        }else {
+        } else {
             askExternalStoragePermission();
         }
     }
@@ -115,11 +114,8 @@ public class MainActivity extends AppCompatActivity implements AudioItemInteract
     private void downloadFile(String url) {
 
 
-            path = App.path_save_aud;
-            endPoint = (url.substring(url.lastIndexOf("/") + 1));  // substring from last "/" to end
-
-
-//        url = "https://api.tazkereh.app//BlogSection/c31712af-a902-4a34-a593-d8e909d130ab.mp3";
+        path = App.path_save_aud;  // add name in app manifest   -->    android:name=".App"
+        endPoint = (url.substring(url.lastIndexOf("/") + 1));  // substring from last "/" to end
 
         progresss = new ProgressDialog(new ContextThemeWrapper(MainActivity.this, R.style.CustomFontDialog));
         PRDownloader.download(url, path, endPoint)
@@ -127,7 +123,6 @@ public class MainActivity extends AppCompatActivity implements AudioItemInteract
                 .setOnStartOrResumeListener(new OnStartOrResumeListener() {
                     @Override
                     public void onStartOrResume() {
-
                         Typeface font = Typeface.createFromAsset(getAssets(), FontUtil.getInstance(MainActivity.this).getPathRegularFont());
                         SpannableStringBuilder spannableSB = new SpannableStringBuilder("درحال دانلود...");
                         spannableSB.setSpan(new CustomTypefaceSpan("myfont.ttf", font), 0, spannableSB.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -144,43 +139,36 @@ public class MainActivity extends AppCompatActivity implements AudioItemInteract
                         }
                         progresss.show();
                     }
-                })
-                .setOnPauseListener(new OnPauseListener() {
-                    @Override
-                    public void onPause() {
-                        Log.i("TAG", "onDownloadComplete: ");
-                    }
-                })
-                .setOnCancelListener(new OnCancelListener() {
-                    @Override
-                    public void onCancel() {
-                        Log.i("TAG", "onDownloadComplete: ");
-                    }
-                })
-                .setOnProgressListener(new OnProgressListener() {
-                    @Override
-                    public void onProgress(Progress progress) {
+                }).setOnPauseListener(new OnPauseListener() {
+            @Override
+            public void onPause() {
 
-                        progresss.setMax((int) progress.totalBytes / 1000);
-                        progresss.setProgress((int) progress.currentBytes / 1000);
-                    }
-                })
-                .start(new OnDownloadListener() {
-                    @Override
-                    public void onDownloadComplete() {
+            }
+        }).setOnCancelListener(new OnCancelListener() {
+            @Override
+            public void onCancel() {
 
-                        Toast.makeText(MainActivity.this, "دانلود کامل شد!", Toast.LENGTH_SHORT).show();
-                        progresss.dismiss();
+            }
+        }).setOnProgressListener(new OnProgressListener() {
+            @Override
+            public void onProgress(Progress progress) {
+                progresss.setMax((int) progress.totalBytes / 1000);
+                progresss.setProgress((int) progress.currentBytes / 1000);
+            }
+        }).start(new OnDownloadListener() {
+            @Override
+            public void onDownloadComplete() {
+                Toast.makeText(MainActivity.this, "دانلود کامل شد!", Toast.LENGTH_SHORT).show();
+                progresss.dismiss();
+            }
 
-                    }
+            @Override
+            public void onError(Error error) {
+                Toast.makeText(MainActivity.this, "خطا در دریافت ویدئو", Toast.LENGTH_SHORT).show();
+                progresss.dismiss();
+            }
+        });
 
-                    @Override
-                    public void onError(Error error) {
-                        Toast.makeText(MainActivity.this, "خطا در دریافت ویدئو", Toast.LENGTH_SHORT).show();
-                        progresss.dismiss();
-                    }
-
-           });
     }
 
     private void askExternalStoragePermission() {
